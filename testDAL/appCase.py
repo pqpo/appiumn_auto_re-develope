@@ -2,8 +2,9 @@ __author__ = 'shikun'
 # -*- coding: utf-8 -*-
 import json
 from common import operateYaml, appPerformance as ap, operateElement as bo
-from common.variable import GetVariable as common
+from common.variable import Constants as common
 from common import testLog
+from common import log
 from common import testLogScreen
 from common import reportPhone as rp
 from testBLL import phoneBase as ba
@@ -12,6 +13,7 @@ from common import  operateFile
 from common import basePickle
 from common import baseRandom
 import time
+from common import log
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
@@ -44,8 +46,7 @@ class AppCase:
         self.cpu = kwargs["cpu"]
         self.men = kwargs["men"]
         self.driver = kwargs["driver"]
-        print("driver_1")
-        print(self.driver)
+        log.info("driver: %s" % self.driver)
         self.package = kwargs["package"]
         self.devices = kwargs["devices"]
 
@@ -56,7 +57,7 @@ class AppCase:
 
     def getModeList(self, f):
         bs = []
-        gh = operateYaml.getYam(f)
+        gh = operateYaml.get_yaml(f)
         for i in range(len(gh)):
             if i == 0:
                   #用例id
@@ -169,6 +170,7 @@ class AppCase:
             self.write_report_collect(_d_report_common, f=common.REPORT_COLLECT_PATH)  # 写入case运行的总个数
             self.GetAppCaseInfo.test_result = "失败"
             self.GetAppCaseInfo.test_reason = "找不到元素"
+            self.GetAppCaseInfo.test_image = testLogScreen.screenshotNG(caseName=kwargs["test_name"], driver=self.driver, resultPath=common.SCREEN_IMG_PATH)
 
         self.GetAppCaseInfo.test_name = kwargs["test_name"]
         self.GetAppCaseInfo.test_module = self.test_module
@@ -240,15 +242,14 @@ class AppCase:
             op.write_txt(str(json))
 
     def pull_crash_log(self):
-        log = ""
-        print("pull_crash_log")
+        crash_log = ""
         _read_crash = basePickle.read_pickle(common.CRASH_LOG_PATH)
         if len(_read_crash) > 0:
             for i in range(len(_read_crash)):
                     if "devices" in _read_crash[i] and _read_crash[i]["devices"] == self.get_phone_name()[1]:  # 如果android 传过来的device和现在测试的decvice相匹配
-                        log = _read_crash[i]["log"]
-                        rand_log = baseRandom.get_ran_dom()+".log"  # 随机的log文件
+                        crash_log = _read_crash[i]["crash_log"]
+                        rand_log = baseRandom.get_ran_dom()+".crash_log"  # 随机的log文件
                         push_log = common.APACHE_PATH+rand_log  # 存到apache的路径里面
-                        os.system("adb -s " + self.devices+" pull "+log+" " + push_log)
+                        os.system("adb -s " + self.devices+" pull "+crash_log+" " + push_log)
                         return common.PROTOCOL + common.HOST + "/" + common.APACHE_PATH + rand_log
-        return log
+        return crash_log

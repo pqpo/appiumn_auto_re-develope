@@ -8,10 +8,11 @@ from email.mime.application import MIMEApplication
 import smtplib
 import configparser
 from common import operateFile as oa
+from common import log
 
 def read_email(Memail):
     if oa.OperateFile(Memail.file, "r").check_file() == False:
-        print("文件不存在")
+        log.error("文件不存在")
         return
     config = configparser.ConfigParser()
     config.read(Memail.file, encoding='utf-8')

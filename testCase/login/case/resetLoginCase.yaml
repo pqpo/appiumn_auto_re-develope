@@ -2,7 +2,7 @@
 -
   operate_type: swipeLeft
   time: 5
-  test_id: 1002
+  test_id: 1003
   test_intr: 登录
 -
   operate_type: tap

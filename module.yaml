@@ -1,0 +1,5 @@
+moduleName: 奔溃测试
+cases:
+ -
+  caseName: login
+  casePath: E:\github\appiumn_auto-master\testCase\test\test.yaml

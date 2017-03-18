@@ -3,6 +3,7 @@ import os
 
 
 class AndroidDebugBridge(object):
+
     def call_adb(self, command):
         command_result = ''
         command_text = 'adb %s' % command
@@ -28,11 +29,13 @@ class AndroidDebugBridge(object):
         else:
             return False
             # return [device for device in devices if len(device) > 2]
+
     # 状态
     def get_state(self):
         result = self.call_adb("get-state")
         result = result.strip(' \t\n\r')
         return result or None
+
     #重启
     def reboot(self, option):
         command = "reboot"
@@ -49,6 +52,7 @@ class AndroidDebugBridge(object):
     def pull(self, remote, local):
         result = self.call_adb("pull %s %s" % (remote, local))
         return result
+
     # 同步更新 很少用此命名
     def sync(self, directory, **kwargs):
         command = "sync %s" % directory

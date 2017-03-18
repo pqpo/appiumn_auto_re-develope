@@ -1,11 +1,10 @@
 __author__ = 'shikun'
 # -*- coding: utf-8 -*-
 import os
-import re
 import math
-from math import ceil
 import subprocess
-from common.variable import GetVariable as common
+from common import log
+
 # 得到手机信息
 def get_phone_info(devices):
     cmd = "adb -s "+ devices +" shell cat /system/build.prop "
@@ -32,8 +31,9 @@ def get_phone_info(devices):
             if temp.find(device) >= 0:
                 l_list["device"] = temp[len(device) :]
                 break
-    print(l_list)
+    log.info(l_list)
     return l_list
+
 
 # 得到最大运行内存
 def get_men_total(devices):
@@ -46,6 +46,8 @@ def get_men_total(devices):
             men_total = line[len(men_total_str) +1:].replace("kB", "").strip()
             break
     return int(men_total)
+
+
 # 得到几核cpu
 def get_cpu_kel(devices):
     cmd = "adb -s " +devices +" shell cat /proc/cpuinfo"
@@ -57,12 +59,15 @@ def get_cpu_kel(devices):
             int_cpu += 1
     return str(int_cpu) + "核"
 
+
 # 得到手机分辨率
 def get_app_pix(devices):
     result = os.popen("adb -s " + devices+ " shell wm size", "r")
     return result.readline().split("Physical size:")[1]
 # get_phone_info("DU2TAN15AJ049163")
 # get_phone_info("MSM8926")
+
+
 def get_avg_raw(l_men, devices):
     '''
 

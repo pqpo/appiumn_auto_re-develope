@@ -2,7 +2,7 @@ __author__ = 'shikun'
 # -*- coding: utf-8 -*-
 from selenium.webdriver.support.ui import WebDriverWait
 import selenium.common.exceptions
-from common.variable import GetVariable as common
+from common.variable import Constants as common
 import time
 from common import errorLog1
 
