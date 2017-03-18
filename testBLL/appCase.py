@@ -11,12 +11,9 @@ class GetAppCase:
         test_module:'模块名'
         GetAppCaseInfo: '用例详情' model层
         GetAppCase: 'app case' model层
-        fps: []
-        cpu: []
-        men: []
         driver:
         package： 包名
-        devices: 设备名
+        device: 设备名
         """
         self.kwargs= kwargs
         self.be = appCase.AppCase(**self.kwargs)

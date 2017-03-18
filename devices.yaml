@@ -1,7 +1,8 @@
 ﻿appium:
- - devices: TA09003E57
+ - device: TA09003E57
    port: 4723
    config: node D:/Appium/node_modules/appium/bin/appium.js  -p 4723 -bp 4733 -U TA09003E57
    platformName: android
    app: E:/github/appiumn_auto-master/img/monkneyTest.apk
+   crashLog: /sdcard/crash/*.log
    resetApp: 1

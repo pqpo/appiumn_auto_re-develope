@@ -3,17 +3,14 @@ __author__ = 'shikun'
 import json
 from common import operateYaml, appPerformance as ap, operateElement as bo
 from common.variable import Constants as common
-from common import testLog
-from common import log
 from common import testLogScreen
 from common import reportPhone as rp
 from testBLL import phoneBase as ba
 import os
-from common import  operateFile
-from common import basePickle
-from common import baseRandom
+from common import operateFile
 import time
 from common import log
+
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
@@ -39,19 +36,19 @@ class AppCase:
         package： 包名
         devices: 设备名
         '''
+        self.crashLog = kwargs["crashLog"]
         self.test_module = kwargs["test_module"]
         self.GetAppCaseInfo = kwargs["GetAppCaseInfo"]
         self.GetAppCase = kwargs["GetAppCase"]
+        self.driver = kwargs["driver"]
+        self.package = kwargs["package"]
+        self.device = kwargs["device"]
         self.fps = kwargs["fps"]
         self.cpu = kwargs["cpu"]
         self.men = kwargs["men"]
-        self.driver = kwargs["driver"]
-        log.info("driver: %s" % self.driver)
-        self.package = kwargs["package"]
-        self.devices = kwargs["devices"]
 
     def get_phone_name(self):
-        get_phone = ba.get_phone_info(devices=self.devices)
+        get_phone = ba.get_phone_info(devices=self.device)
         phone_name = get_phone["brand"] + "_" +get_phone["model"] + "_"+"android" +"_"+ get_phone["release"]
         return phone_name, get_phone["device"] # 这里的device就是设备名
 
@@ -60,9 +57,9 @@ class AppCase:
         gh = operateYaml.get_yaml(f)
         for i in range(len(gh)):
             if i == 0:
-                  #用例id
+                # 用例id
                 self.GetAppCaseInfo.test_id = gh[i].get("test_id", "false")
-                 # 用例介绍
+                # 用例介绍
                 self.GetAppCaseInfo.test_intr = gh[i].get("test_intr", "false")
             # bt = self.GetAppCase
             self.GetAppCase.element_info = gh[i].get("element_info", "false")
@@ -99,30 +96,26 @@ class AppCase:
         is_last: 最后一个用例 1, 0
         :return:
         '''
-        # logTest = testLog.myLog().getLog()
         bc = self.getModeList(f)
         go = bo.OperateElement(driver=self.driver)
         ch_check = bc[-1]
+        if self.crashLog:
+            ba.remove_file(self.device, self.crashLog)
         _d_report_common = {"test_success": 0, "test_failed": 0, "test_sum": 0} #case的运行次数和性能
         is_crash = NORMAL  # 0表示没有闪退，1标识有闪退，2标识没有闪退，找不到页面元素
         for k in bc:
             if k["operate_type"] != "false":
-                k["devices"] = self.devices
-                # _d_report_common["test_sum"] += 1
                 _operate = go.operate_element(k)
+                # 单个case的情况收集
+                self.cpu.append(ap.get_men(devices=self.device, pkg_name=self.package))
+                self.men.append(ap.top_cpu(devices=self.device, pkg_name=self.package))
+                self.fps.append(ap.get_fps(devices=self.device, pkg_name=self.package))
                 if len(self.pull_crash_log()) > 0:
                     is_crash = IS_CRASH
+                    break
                 elif not _operate:
                     is_crash = NO_ELEMENT
-                else:
-                    is_crash = NORMAL
-                get_men = ap.get_men(devices=self.devices, pkg_name=self.package)
-                get_cpu = ap.top_cpu(devices=self.devices, pkg_name=self.package)
-                get_fps = ap.get_fps(devices=self.devices, pkg_name=self.package)
-                # 单个case的情况收集
-                self.cpu.append(get_cpu)
-                self.men.append(get_men)
-                self.fps.append(get_fps)
+                    break
                 time.sleep(2)
         _d_report_common["test_sum"] += 1
         self.report(go, ch_check, _d_report_common, kwargs, is_crash=is_crash)
@@ -130,7 +123,7 @@ class AppCase:
     def report(self, go, ch_check, _d_report_common, kwargs, is_crash):
 
         self.GetAppCaseInfo.test_men_max = rp.phone_max_use_raw(self.men)  # 内存最大使用情况
-        avg_men = ba.get_avg_raw(self.men, self.devices)  # 获取每次占用内存平均值
+        avg_men = ba.get_avg_raw(self.men, self.device)  # 获取每次占用内存平均值
         self.GetAppCaseInfo.test_men_avg = avg_men
         self.GetAppCaseInfo.test_cpu_max = rp.phone_avg_max_use_cpu(self.cpu)  # cpu最大使用
         self.GetAppCaseInfo.test_cpu_avg = rp.phone_avg_use_cpu(self.cpu)  # cpu平均使用
@@ -138,10 +131,10 @@ class AppCase:
         self.GetAppCaseInfo.test_fps_avg = rp.fps_avg(self.fps)
 
         d_report = {}
-        raw = ba.get_men_total(devices=self.devices)
+        raw = ba.get_men_total(devices=self.device)
         d_report["phone_name"] = self.get_phone_name()[0]
-        d_report["phone_pix"] = ba.get_app_pix(self.devices)
-        d_report["phone_cpu"] = ba.get_cpu_kel(self.devices)
+        d_report["phone_pix"] = ba.get_app_pix(self.device)
+        d_report["phone_cpu"] = ba.get_cpu_kel(self.device)
         d_report["phone_raw"] = rp.phone_raw(raw / 1024)
         if is_crash == NORMAL:  # 正常情况
             if go.findElement(ch_check):
@@ -222,7 +215,7 @@ class AppCase:
             _result[key].append(json)
         op = operateFile.OperateFile(f, "w")
         op.write_txt(str(_result))
-        print(_result)
+        log.info(_result)
 
     # 写入统计总的case的运行次数
     def write_report_collect(self, json, f=""):
@@ -243,13 +236,9 @@ class AppCase:
 
     def pull_crash_log(self):
         crash_log = ""
-        _read_crash = basePickle.read_pickle(common.CRASH_LOG_PATH)
-        if len(_read_crash) > 0:
-            for i in range(len(_read_crash)):
-                    if "devices" in _read_crash[i] and _read_crash[i]["devices"] == self.get_phone_name()[1]:  # 如果android 传过来的device和现在测试的decvice相匹配
-                        crash_log = _read_crash[i]["crash_log"]
-                        rand_log = baseRandom.get_ran_dom()+".crash_log"  # 随机的log文件
-                        push_log = common.APACHE_PATH+rand_log  # 存到apache的路径里面
-                        os.system("adb -s " + self.devices+" pull "+crash_log+" " + push_log)
-                        return common.PROTOCOL + common.HOST + "/" + common.APACHE_PATH + rand_log
+        if self.crashLog:
+            temp = ba.read_file(self.device, self.crashLog).decode()
+            if "No such file or directory" not in temp:
+                crash_log = temp
+        log.info("crash log: %s" % crash_log)
         return crash_log

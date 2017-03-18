@@ -20,9 +20,6 @@ class Constants(object):
     APPIUM = "appium"
     ANDROID = "android"
     IOS = "ios"
-    IE = "ie"
-    FOXFIRE = "foxfire"
-    CHROME = "chrome"
     SELENIUM_APPIUM = "appium"
     DRIVER = ""
 
@@ -41,15 +38,8 @@ class Constants(object):
     REPORT_COLLECT_PATH = "d:/collect.txt"
     # 存放crash的json文件名
     CRASH_LOG_PATH = "d:/crash.txt"
-    # my server
-    HOST = '127.0.0.1'
-    PORT = 8088
 
-    # 协议
-    PROTOCOL = "http://"
-    # apache器的地址，开发可以在这个上面下载异常日志
     APACHE_PATH = "D:/log/"
-    # 截图地址
     SCREEN_IMG_PATH = "D:/img/"
 
 

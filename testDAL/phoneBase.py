@@ -75,10 +75,28 @@ def get_avg_raw(l_men, devices):
     :param devices: 设备名
     :return:
     '''
-    l_men = [math.ceil(((l_men[i])/get_men_total(devices))*1024) for i in range(len(l_men))]  # 获取每次占用内存多少
-    if len(l_men) > 0 :
-            return str(math.ceil(sum(l_men)/len(l_men))) + "%"
+    try:
+        l_men = [math.ceil(((l_men[i]) / get_men_total(devices)) * 1024) for i in range(len(l_men))]  # 获取每次占用内存多少
+        if len(l_men) > 0:
+            return str(math.ceil(sum(l_men) / len(l_men))) + "%"
+    except:
+        pass
     return "0%"
 
+
+def remove_file(device, file):
+    cmd = "adb -s " + device + " shell rm " + file
+    os.popen(cmd).readlines()
+
+
+def read_file(device, file):
+    cmd = "adb -s " + device + " shell cat " + file
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
+                         stdin=subprocess.PIPE, shell=True)
+    (output, err) = p.communicate()
+    return output
+
+
 if __name__=="__main__":
-    get_phone_info("DU2TAN15AJ049163")
+    print(read_file("TA09003E57", "/sdcard/Android/data/com.hexin.plat.kaihu/files/logs/20170318.log"))

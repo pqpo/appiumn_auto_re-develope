@@ -1,7 +1,9 @@
 __author__ = 'shikun'
 import os
+from common import log
+
+
 class OperateFile:
-    #method(r,w,a)
     def __init__(self, file, method='w+'):
         self.file = file
         self.method = method
@@ -28,30 +30,25 @@ class OperateFile:
             for i in file_list:
                 print(i.strip("\n"))
             self.fileHandle.close()
+
     def check_file(self):
         if not os.path.isfile(self.file):
-            # print('文件不存在' + self.file)
-            # sys.exit()
             return False
         else:
             return True
-        # print("文件存在！")
 
     def mkdir_file(self):
         if not os.path.isfile(self.file):
             f = open(self.file, self.method)
             f.close()
-            print("创建文件成功")
+            log.info("创建文件成功 %s" % self.file)
         else:
-            print("文件已经存在")
+            log.info("文件已经存在 %s" % self.file)
+
     def remove_file(self):
         if os.path.isfile(self.file):
             os.remove(self.file)
-            print("删除文件成功")
+            log.info("删除文件成功 %s" % self.file)
         else:
-            print("文件不存在")
-# if __name__ == '__main__':
-#     bf = OperateFile("text.xml")
-#     if bf.check_file() == False:
-#         bf.mkdir_file()
-#     bf.write_txt("111")
+            log.info("文件不存在 %s" % self.file)
+

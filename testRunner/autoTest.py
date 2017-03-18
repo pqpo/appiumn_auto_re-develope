@@ -1,16 +1,17 @@
 from testBLL import appCase as b_app_case
-from testMode import appCase as m_app_case
 from testRunner.runnerBase import TestInterfaceCase as te
+from testMode import appCase as m_app_case
 
 
 class AutoTest(te):
 
     def setUp(self):
         super(AutoTest, self).setUp()
-        self.bc = b_app_case.GetAppCase(test_module=self.device['module_case']['moduleName'], GetAppCaseInfo=m_app_case.GetAppCaseInfo,
+        self.bc = b_app_case.GetAppCase(crashLog=self.device["crashLog"], test_module=self.device['module_case']['moduleName'],
+                                        GetAppCaseInfo=m_app_case.GetAppCaseInfo,
                                         GetAppCase=m_app_case.GetAppCase, fps=[], cpu=[], men=[],
                                         driver=self.driver, package=self.package_name(),
-                                        devices=self.device["deviceName"])
+                                        device=self.device["deviceName"])
 
     def tearDown(self):
         self.driver.close_app()

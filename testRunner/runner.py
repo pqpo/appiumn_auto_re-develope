@@ -23,11 +23,7 @@ from testBLL import apkBase
 from multiprocessing import Pool
 from common import operateFile
 from common import operateYaml
-from http.server import HTTPServer
-from common import myserver
 from common import log
-from multiprocessing import Process
-import subprocess
 from testRunner.autoTest import AutoTest
 
 
@@ -88,11 +84,14 @@ def runner_pool(module_case_yaml):
         device["resetApp"] = False
         if 'resetApp' in item:
             device["resetApp"] = item["resetApp"] == 1
-        device["deviceName"] = item["devices"]
-        device["platformVersion"] = phoneBase.get_phone_info(devices=item["devices"])["release"]
+        device["deviceName"] = item["device"]
+        device["platformVersion"] = phoneBase.get_phone_info(devices=item["device"])["release"]
         device["platformName"] = item["platformName"]
         device["port"] = item["port"]
         device["module_case"] = module_case
+        device["crashLog"] = False
+        if 'crashLog' in item:
+            device["crashLog"] = item["crashLog"]
         devices_pool.append(device)
     pool = Pool(len(devices_pool))
     pool.map(case_runner, devices_pool)
@@ -121,11 +120,6 @@ def report():
     b_operate_report.detail(worksheet2)
     b_operate_report.close()
     # b_email.send_mail(get_email())
-
-
-def open_web_server():
-    web_server = HTTPServer((Constants.HOST, Constants.PORT), myserver.myHandler)
-    web_server.serve_forever()
 
 
 def check_module_file(module_file):
@@ -163,17 +157,12 @@ if __name__ == '__main__':
     if not check_module_file(case_file):
         pass
     elif adbCommon.attached_devices():
-        p = Process(target=open_web_server, args=())
-        p.start()
-
         appium_server = server.AppiumServer(ga)
         appium_server.start_server()
         while not appium_server.is_runnnig():
             time.sleep(2)
         runner_pool(PATH(case_file))
         appium_server.stop_server()
-        subprocess.Popen("taskkill /F /T /PID " + str(p.pid), shell=True)
-        # web_server.server_close() #关闭webserver
         operateFile.OperateFile(Constants.REPORT_COLLECT_PATH).remove_file()
         operateFile.OperateFile(Constants.REPORT_INIT).remove_file()
         operateFile.OperateFile(Constants.REPORT_INFO_PATH).remove_file()
