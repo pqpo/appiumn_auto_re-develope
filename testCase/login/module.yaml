@@ -1,8 +1,0 @@
-moduleName: 登录
-cases:
- -
-  caseName: login
-  casePath: E:\github\appiumn_auto-master\testCase\login\case\normalLoginCase.yaml
- -
-  caseName: logout
-  casePath: E:\github\appiumn_auto-master\testCase\login\case\logoutCase.yaml
