@@ -14,11 +14,10 @@ from testRunner.runnerBase import TestInterfaceCase
 from testBLL import email as b_email
 from testBLL import server
 from testBLL import adbCommon
-from testMode import email as m_email
+from testModel import email as m_email
 from testBLL import report as b_report
 from testBLL import phoneBase
 from common.variable import Constants
-from common import dataToString
 from testBLL import apkBase
 from multiprocessing import Pool
 from common import operateFile
@@ -26,8 +25,6 @@ from common import operateYaml
 from common import log
 from testRunner.autoTest import AutoTest
 
-
-data = {"init": [], "info": []}
 
 def get_devices():
     return operateYaml.get_yaml(PATH("../devices.yaml"))
@@ -40,38 +37,21 @@ def get_email():
     return email
 
 
-def read_report(f=""):
-    op = operateFile.OperateFile(f, "r")
-    return op.read_txt_row()
-
-
 # 得到总统计的case
-def get_report_collect(start_test_time, endtime, starttime, device):
-    _read_collect_json = eval(read_report(Constants.REPORT_COLLECT_PATH))
+def get_report_collect(star_time, end_time, device):
+    data = {"init": [], "info": []}
+    _read_collect_json = eval(operateFile.OperateFile(Constants.REPORT_COLLECT_PATH, "r").read_txt_row())
     for key in _read_collect_json:
         data[key] = _read_collect_json[key]
     apk_msg = apkBase.ApkInfo(device["appPath"])
     data["app_name"] = apk_msg.get_apk_name()
     data["app_size"] = apk_msg.get_apk_size()
     data["app_version"] = apk_msg.get_apk_version()
-    data["test_sum_date"] = str((endtime - starttime).seconds) + "秒"
-    data["test_date"] = start_test_time
-
-
-# 得到每个设备的的case 运行情况
-def get_report_init():
-    data["init"] = eval(read_report(Constants.REPORT_INIT))["init"]
-
-
-# 得到每个case的运行情况
-def get_report_info():
-    data["info"] = eval(read_report(Constants.REPORT_INFO_PATH))["info"]
-
-
-def get_common_report(start_test_time, end_time, start_time, device):
-    get_report_collect(start_test_time, end_time, start_time, device)
-    get_report_init()
-    get_report_info()
+    data["test_sum_date"] = str((end_time - star_time).seconds) + "秒"
+    data["test_date"] = star_time.strftime("%Y-%m-%d %H:%M %p")
+    data["init"] = eval(operateFile.OperateFile(Constants.REPORT_INIT, "r").read_txt_row())["init"]
+    data["info"] = eval(operateFile.OperateFile(Constants.REPORT_INFO_PATH, "r").read_txt_row())["info"]
+    return data
 
 
 def runner_pool(module_case_yaml):
@@ -100,21 +80,24 @@ def runner_pool(module_case_yaml):
 
 
 def case_runner(device):
-    start_test_time = dataToString.getStrTime(time.localtime(), "%Y-%m-%d %H:%M %p")
     start_time = datetime.datetime.now()
     suite = unittest.TestSuite()
     suite.addTest(TestInterfaceCase.parametrize(AutoTest, device=device))
     unittest.TextTestRunner(verbosity=2).run(suite)
     end_time = datetime.datetime.now()
-    get_common_report(start_test_time, end_time, start_time, device)
-    report()
+    report(start_time, end_time, device)
 
 
-def report():
+def report(start_time, end_time, device):
+    data = get_report_collect(start_time, end_time, device)
     workbook = xlsxwriter.Workbook('GetReport.xlsx')
     worksheet = workbook.add_worksheet("测试总况")
     worksheet2 = workbook.add_worksheet("测试详情")
-    log.error(data)
+    log.info("################### result #####################")
+    log.info("#")
+    log.info("#    %s" % data)
+    log.info("#")
+    log.info("################################################")
     b_operate_report = b_report.OperateReport(wd=workbook, data=data)
     b_operate_report.init(worksheet)
     b_operate_report.detail(worksheet2)
@@ -148,7 +131,7 @@ def check_module_file(module_file):
 
 
 if __name__ == '__main__':
-    log.info("--------------------------------Start--------------------------------------")
+    log.info("===============================Start===================================")
     ga = get_devices()
     case_file = PATH('../module.yaml')
     if len(sys.argv) > 1:
@@ -159,7 +142,7 @@ if __name__ == '__main__':
     elif adbCommon.attached_devices():
         appium_server = server.AppiumServer(ga)
         appium_server.start_server()
-        while not appium_server.is_runnnig():
+        while not appium_server.is_running():
             time.sleep(2)
         runner_pool(PATH(case_file))
         appium_server.stop_server()
@@ -169,4 +152,4 @@ if __name__ == '__main__':
         operateFile.OperateFile(Constants.CRASH_LOG_PATH).remove_file()
     else:
         log.error(u"设备不存在")
-    log.info("--------------------------------End---------------------------------------")
+    log.info("=======================================End=====================================")

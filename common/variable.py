@@ -16,12 +16,9 @@ class Constants(object):
     find_elements_by_xpath = "by_xpaths"
     find_element_by_class_name = "class_name"
     find_elements_by_class_name = "class_names"
-    SELENIUM = "selenium"
-    APPIUM = "appium"
+
     ANDROID = "android"
     IOS = "ios"
-    SELENIUM_APPIUM = "appium"
-    DRIVER = ""
 
     OPERATION_TYPE_CLICK = "click"
     OPERATION_TYPE_SWIPE_LEFT = "swipeLeft"
@@ -38,8 +35,6 @@ class Constants(object):
     REPORT_COLLECT_PATH = "d:/collect.txt"
     # 存放crash的json文件名
     CRASH_LOG_PATH = "d:/crash.txt"
-
-    APACHE_PATH = "D:/log/"
     SCREEN_IMG_PATH = "D:/img/"
 
 

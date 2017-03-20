@@ -10,8 +10,9 @@ import configparser
 from common import operateFile as oa
 from common import log
 
+
 def read_email(Memail):
-    if oa.OperateFile(Memail.file, "r").check_file() == False:
+    if not oa.OperateFile(Memail.file, "r").check_file():
         log.error("文件不存在")
         return
     config = configparser.ConfigParser()
@@ -30,6 +31,8 @@ def read_email(Memail):
 def _format_addr(s):
     name, addr = parseaddr(s)
     return formataddr((Header(name, 'utf-8').encode(), addr))
+
+
 def send_mail(Memail):
     '''
 

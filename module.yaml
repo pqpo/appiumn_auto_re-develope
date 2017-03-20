@@ -1,5 +1,8 @@
-moduleName: 奔溃测试
+moduleName: 闪退测试
 cases:
- -
-  caseName: login
+-
+  caseName: crashtest
+  casePath: E:\github\appiumn_auto-master\testCase\test\test2.yaml
+-
+  caseName: crashtest
   casePath: E:\github\appiumn_auto-master\testCase\test\test.yaml

@@ -60,9 +60,6 @@ def operate_click(operate, cts):
         elements_by(operate, cts).click()
     if operate["find_type"] == common.find_elements_by_id or operate["find_type"] == common.find_elements_by_name:
         elements_by(operate, cts)[operate["index"]].click()
-    # 记录运行过程中的一些系统日志，比如闪退会造成自动化测试停止
-    if common.SELENIUM_APPIUM == common.APPIUM:
-        pass
 
 
 # 左滑动

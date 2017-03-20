@@ -14,7 +14,6 @@ class GetAppCase(Model):
     name = StringType()
     index = IntType()
     text = StringType()# 输入信息
-    log = StringType() # 本地log信息路径，一般由手机名字_型号构成
     timeout = IntType() # 超时时间
     point = ListType(IntType())
 
@@ -31,8 +30,8 @@ class GetAppCaseInfo(Model):
     test_men_avg = StringType() # 内存平均使用情况
     test_cpu_max = StringType() #cpu最大使用峰值
     test_cpu_avg = StringType() #cpu 平均使用值
-    test_fps_max = StringType() # fps最大峰值
-    test_fps_avg = StringType() # fps平均值
+    # test_fps_max = StringType() # fps最大峰值
+    # test_fps_avg = StringType() # fps平均值
     # test_devices = StringType()
     test_phone_name = StringType() #设备_手机_型号
     test_image = StringType() # 图片

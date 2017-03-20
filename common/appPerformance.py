@@ -1,45 +1,62 @@
 __author__ = 'shikun'
 # -*- coding: utf-8 -*-
-import subprocess
 import re, os
-import math
+from common import log
+
+num_re = re.compile("\d+\.?\d*")
+
 
 # 常用的性能监控
 def top_cpu(devices, pkg_name):
     cmd = "adb -s "+devices+" shell dumpsys cpuinfo | findstr " + pkg_name+":"
-    get_cmd = os.popen(cmd).readlines()
-    for info in get_cmd:
-        return float(info.split()[2].split("%")[0])
+    get_cmd = os.popen(cmd).read()
+    match = re.compile(pkg_name + ": \d+\.?\d*%").search(get_cmd)
+    result = 0.0
+    if match:
+        num_match = num_re.search(match.group())
+        if num_match:
+            result = num_match.group()
+    try:
+        result = float(result)
+    except:
+        log.war("获取失败：" + str(result))
+    return result
+
 
 # 得到men的使用情况
 def get_men(devices, pkg_name):
     cmd = "adb -s "+devices+" shell  dumpsys  meminfo %s"  %(pkg_name)
-    total = "TOTAL"
-    get_cmd = os.popen(cmd).readlines()
-    for info in get_cmd:
-        info_sp = info.strip().split()
-        for item in range(len(info_sp)):
-            if info_sp[item] == total:
-               return int(info_sp[item+1])
-    return 0
+    get_cmd = os.popen(cmd).read()
+    match = re.compile("TOTAL:[ ]*\d+").search(get_cmd)
+    result = 0
+    if match:
+        num_match = num_re.search(match.group())
+        if num_match:
+            result = num_match.group()
+    try:
+        result = int(result)
+    except:
+        log.war("获取失败：" + str(result))
+    return result
+
 
 # 得到fps
-def get_fps(devices, pkg_name):
-    _adb = "adb -s "+devices+" shell dumpsys gfxinfo %s | findstr -A 128 'Execute'  | findstr -v '[a-Z]' "%pkg_name
-    result = os.popen(_adb).read().strip()
-    result = result.split('\r\n')
-    # r_result = [] # 总值
-    # t_result = [] # draw,Process,Execute分别的值
-    # f_sum = 0
-    for i in result:
-        l_result = i.split('\t')[-3:]
-        f_sum = 0
-        for j in l_result:
-            r = re.search(r"\d+\.\d+", str(j))
-            if r:
-                f_sum += float(r.group())
-            # t_result.append('%.2f'%f_sum)
-        return float('%.2f'%f_sum)
+# def get_fps(devices, pkg_name):
+#     _adb = "adb -s "+devices+" shell dumpsys gfxinfo %s | findstr -A 128 'Execute'  | findstr -v '[a-Z]' "%pkg_name
+#     result = os.popen(_adb).read().strip()
+#     result = result.split('\r\n')
+#     # r_result = [] # 总值
+#     # t_result = [] # draw,Process,Execute分别的值
+#     # f_sum = 0
+#     for i in result:
+#         l_result = i.split('\t')[-3:]
+#         f_sum = 0
+#         for j in l_result:
+#             r = re.search(r"\d+\.\d+", str(j))
+#             if r:
+#                 f_sum += float(r.group())
+#             # t_result.append('%.2f'%f_sum)
+#         return float('%.2f' % f_sum)
     # print(r_result)
     # print(t_result)
 # get_phone_info("MSM8926")
@@ -54,13 +71,9 @@ def get_fps(devices, pkg_name):
 #     flow[0].append(ceil(int(t[6][1])/1024)) # 下载
 #     flow[1].append(ceil(int(t[6][9])/1024)) # 发送
 #     return flow
-def read_report(f=""):
-    from common.operateFile import OperateFile
-    op = OperateFile(f, "r")
-    return op.read_txt_row()
 
 if __name__ == '__main__':
-    print(top_cpu(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
-    print(get_men(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
-    print(get_fps(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
+    # print(top_cpu(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
+    # print(get_men(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
+    # print(get_fps(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
     pass

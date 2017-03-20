@@ -41,14 +41,8 @@ class OperateFile:
         if not os.path.isfile(self.file):
             f = open(self.file, self.method)
             f.close()
-            log.info("创建文件成功 %s" % self.file)
-        else:
-            log.info("文件已经存在 %s" % self.file)
 
     def remove_file(self):
         if os.path.isfile(self.file):
             os.remove(self.file)
-            log.info("删除文件成功 %s" % self.file)
-        else:
-            log.info("文件不存在 %s" % self.file)
 

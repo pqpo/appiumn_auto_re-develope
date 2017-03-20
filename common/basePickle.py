@@ -14,20 +14,18 @@ def write_pickle(dict_data, path="data.pickle"):
     else:
         result.append(dict_data)
     with open(path, 'wb') as f:
-        print(result)
         pickle.dump(result, f, 0)
 
 
 def read_pickle(path):
-    data = {}
+    pickle_data = {}
     if operateFile.OperateFile(path).check_file():
         with open(path, 'rb') as f:
             try:
-                data = pickle.load(f)
+                pickle_data = pickle.load(f)
             except EOFError:
                 pass
-    print(data)
-    return data
+    return pickle_data
 
 if __name__ == "__main__":
     data = {"log":"132"}

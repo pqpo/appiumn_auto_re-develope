@@ -10,8 +10,6 @@ def get_yaml(home_yaml):
     try:
         with open(home_yaml, encoding='utf-8') as f:
             x = yaml.load(f)
-            log.info(u"yaml file: %s" % home_yaml)
-            log.info(u"yaml content: %s" % x)
             return x
     except FileNotFoundError:
         log.error(u"找不到文件: %s" % home_yaml)
