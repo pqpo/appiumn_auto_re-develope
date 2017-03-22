@@ -49,7 +49,7 @@ class AppCase:
 
     def get_phone_name(self):
         get_phone = ba.get_phone_info(devices=self.device)
-        phone_name = get_phone["brand"] + "_" +get_phone["model"] + "_"+"android" +"_"+ get_phone["release"]
+        phone_name = get_phone["brand"] + "_"+"android" + "_" + get_phone["release"]
         return phone_name, get_phone["device"]  # 这里的device就是设备名
 
     def getModeList(self, f):
@@ -58,29 +58,29 @@ class AppCase:
         for i in range(len(gh)):
             if i == 0:
                 # 用例id
-                self.GetAppCaseInfo.test_id = gh[i].get("test_id", "false")
+                self.GetAppCaseInfo.test_id = gh[i].get(common.TEST_ID, "false")
                 # 用例介绍
-                self.GetAppCaseInfo.test_intr = gh[i].get("test_intr", "false")
-            # bt = self.GetAppCase
-            self.GetAppCase.element_info = gh[i].get("element_info", "false")
+                self.GetAppCaseInfo.test_desc = gh[i].get(common.TEST_DESC, "false")
+
+            self.GetAppCase.element_info = gh[i].get(common.ELEMENT_INFO, "false")
 
             # 操作类型
-            self.GetAppCase.operate_type = gh[i].get("operate_type", "false")
-            # 输入文字
-            self.GetAppCase.name = gh[i].get("name", "false")
+            self.GetAppCase.operate_type = gh[i].get(common.OPERATION_TYPE, "false")
 
-            self.GetAppCase.index = gh[i].get("index", "false")
+            self.GetAppCase.index = gh[i].get(common.FIND_ELEMENTS_INDEX, "false")
 
-            self.GetAppCase.text = gh[i].get("text", "false") # 对应by_link_text
+            self.GetAppCase.text = gh[i].get(common.SEND_KEY_TEXT, "false")
 
             # 验证类型
-            self.GetAppCase.find_type = gh[i].get("find_type", "false")
+            self.GetAppCase.find_type = gh[i].get(common.FIND_TYPE, "false")
 
-            self.GetAppCase.time = gh[i].get("time", 0)
+            self.GetAppCase.times = gh[i].get(common.SWIPE_TIMES, 1)
 
-            self.GetAppCase.timeout = gh[i].get("timeout", 0)
+            self.GetAppCase.timeout = gh[i].get(common.WAITE_TIMEOUT, common.DEFAULT_TIMEOUT)
 
-            self.GetAppCase.point = gh[i].get("point", [-1, -1])
+            self.GetAppCase.point = gh[i].get(common.TAP_POINT, [-1, -1])
+
+            self.GetAppCase.direction = gh[i].get(common.SWIPE_DIRECTION, common.SWIPE_DIRECTION_TO_LEFT)
 
             bs.append(json.loads(json.dumps(self.GetAppCase().to_primitive())))
         return bs
@@ -103,7 +103,7 @@ class AppCase:
         operate_result = NORMAL  # 0表示没有闪退，1标识有闪退，2标识没有闪退，找不到页面元素
         ng_img = None
         for k in bc:
-            if k["operate_type"] != "false":
+            if k[common.OPERATION_TYPE] != "false":
                 # 单个case的情况收集
                 self.cpu.append(ap.top_cpu(devices=self.device, pkg_name=self.package))
                 self.men.append(ap.get_men(devices=self.device, pkg_name=self.package))

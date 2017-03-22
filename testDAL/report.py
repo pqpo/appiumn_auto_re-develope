@@ -11,12 +11,14 @@ class OperateReport:
 
     def init(self, worksheet):
          # 设置列行的宽高
-        worksheet.set_column("A:A", 15)
+        worksheet.set_column("A:A", 25)
         worksheet.set_column("B:B", 20)
         worksheet.set_column("C:C", 20)
         worksheet.set_column("D:D", 20)
         worksheet.set_column("E:E", 20)
         worksheet.set_column("F:F", 20)
+        worksheet.set_column("G:G", 20)
+        worksheet.set_column("H:H", 20)
 
         worksheet.set_row(1, 30)
         worksheet.set_row(2, 30)
@@ -96,13 +98,13 @@ class OperateReport:
 
     def test_detail(self, worksheet):
         # 设置列行的宽高
-        worksheet.set_column("A:A", 20)
-        # worksheet.set_column("B:B", 20)
-        # worksheet.set_column("C:C", 20)
-        # worksheet.set_column("D:D", 20)
-        # worksheet.set_column("E:E", 20)
-        # worksheet.set_column("F:F", 20)
-        # worksheet.set_column("G:G", 20)
+        worksheet.set_column("A:A", 25)
+        # worksheet.set_column("B:B", 15)
+        worksheet.set_column("C:C", 15)
+        worksheet.set_column("D:D", 15)
+        worksheet.set_column("E:E", 15)
+        worksheet.set_column("F:F", 15)
+        worksheet.set_column("G:G", 15)
         # worksheet.set_column("H:H", 20)
 
         worksheet.set_row(1, 30)
@@ -137,7 +139,7 @@ class OperateReport:
             _write_center(worksheet, "A"+str(temp), item["test_phone_name"], self.wd)
             _write_center(worksheet, "B"+str(temp), item["test_id"], self.wd)
             _write_center(worksheet, "C"+str(temp), item["test_module"], self.wd)
-            _write_center(worksheet, "D"+str(temp), item["test_intr"], self.wd)
+            _write_center(worksheet, "D"+str(temp), item["test_desc"], self.wd)
             _write_center(worksheet, "E"+str(temp), item["test_name"], self.wd)
             _write_center(worksheet, "F"+str(temp), item["test_men_max"], self.wd)
             _write_center(worksheet, "G"+str(temp), item["test_men_avg"], self.wd)

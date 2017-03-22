@@ -35,7 +35,7 @@ class TestInterfaceCase(unittest.TestCase):
         self.device = device
 
     def setUp(self):
-        if self.device["platformName"] == Constants.ANDROID:
+        if self.device["platformName"] == Constants.PLATFORM_ANDROID:
             self.driver = appium_test_case(self.device)
 
     def package_name(self):
