@@ -132,6 +132,8 @@ class AppCase:
         # self.GetAppCaseInfo.test_fps_max = rp.fps_max(self.fps)
         # self.GetAppCaseInfo.test_fps_avg = rp.fps_avg(self.fps)
         self.GetAppCaseInfo.test_image = ng_img
+        log.info("mem: %s" % str(self.men))
+        log.info("cpu: %s" % str(self.cpu))
 
         d_report = {}
         raw = ba.get_men_total(devices=self.device)
@@ -233,8 +235,7 @@ class AppCase:
     def pull_crash_log(self):
         crash_log = ""
         if self.crashLog:
-            temp = ba.read_file(self.device, self.crashLog).decode()
-            if "No such file or directory" not in temp:
-                crash_log = temp
+            crash_log = ba.read_file(self.device, self.crashLog)
+            if len(crash_log) > 0:
                 log.info("crash log: %s" % crash_log)
         return crash_log

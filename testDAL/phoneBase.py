@@ -59,7 +59,7 @@ def get_cpu_kel(devices):
 def get_app_pix(devices):
     try:
         result = os.popen("adb -s " + devices + " shell wm size", "r").read()
-        return result.split(": ")[1]
+        return result.split(": ")[1].strip()
     except:
         pass
     return "Unknown"
@@ -76,11 +76,13 @@ def read_file(device, file):
                          stderr=subprocess.PIPE,
                          stdin=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
+    output = output.decode()
+    if "No such file or directory" in output:
+        return ""
     return output
 
 
 if __name__=="__main__":
-    # print(read_file("TA09003E57", "/sdcard/Android/data/com.hexin.plat.kaihu/files/logs/20170318.log"))
     print(get_phone_info("TA09003E57"))
     print(get_cpu_kel("TA09003E57"))
     print(get_men_total("TA09003E57"))

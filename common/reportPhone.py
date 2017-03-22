@@ -6,7 +6,7 @@ from common import log
 def phone_avg_use_cpu(cpu):
     result = "0%"
     if len(cpu) > 0:
-        result = str(math.ceil(sum(cpu) / len(cpu))) + "%"
+        result = "%.1f" % (sum(cpu) / len(cpu)) + "%"
     return result
 
 

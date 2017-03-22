@@ -12,7 +12,6 @@ def appium_test_case(device):
     desired_caps = {}
     desired_caps['platformName'] = device["platformName"]
     desired_caps['platformVersion'] = device["platformVersion"]
-    desired_caps['platformVersion'] = device["platformVersion"]
     desired_caps['deviceName'] = device["deviceName"]
     desired_caps['appPackage'] = apk_base.get_apk_pkg()
     desired_caps['appActivity'] = apk_base.get_apk_activity()
