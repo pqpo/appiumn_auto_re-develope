@@ -14,18 +14,18 @@ def get_phone_info(devices):
                                      stdin=subprocess.PIPE, shell=True).communicate()
     if output:
         output = output.decode()
-        release_match = re.compile("ro.build.version.release=.+\s").search(output)
-        model_match = re.compile("ro.product.model=.+\s").search(output)
-        brand_match = re.compile("ro.product.brand=.+\s").search(output)
-        device_match = re.compile("ro.product.device=.+\s").search(output)
+        release_match = re.compile("ro.build.version.release=(.+)\s+").search(output)
+        model_match = re.compile("ro.product.model=(.+)\s+").search(output)
+        brand_match = re.compile("ro.product.brand=(.+)\s+").search(output)
+        device_match = re.compile("ro.product.device=(.+)\s+").search(output)
         if release_match:
-            l_list["release"] = release_match.group().strip().split("=")[1]
+            l_list["release"] = release_match.group(1).strip()
         if model_match:
-            l_list["model"] = model_match.group().strip().split("=")[1]
+            l_list["model"] = model_match.group(1).strip()
         if brand_match:
-            l_list["brand"] = brand_match.group().strip().split("=")[1]
+            l_list["brand"] = brand_match.group(1).strip()
         if device_match:
-            l_list["device"] = device_match.group().strip().split("=")[1]
+            l_list["device"] = device_match.group(1).strip()
     return l_list
 
 
@@ -35,11 +35,9 @@ def get_men_total(devices):
     output = os.popen(cmd).read()
     men_total = 0
     if output:
-        match = re.compile("MemTotal:.+kB").search(output)
+        match = re.compile("MemTotal:\s+(\d+)\skB").search(output)
         if match:
-            num_match = re.compile("\d+").search(match.group())
-            if num_match:
-                men_total = int(num_match.group())
+            men_total = int(match.group(1))
     return men_total
 
 
@@ -59,7 +57,9 @@ def get_cpu_kel(devices):
 def get_app_pix(devices):
     try:
         result = os.popen("adb -s " + devices + " shell wm size", "r").read()
-        return result.split(": ")[1].strip()
+        match = re.compile("Physical size: (\d+x\d+)\s+").search(result)
+        if match:
+            return match.group(1)
     except:
         pass
     return "Unknown"

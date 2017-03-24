@@ -10,16 +10,13 @@ num_re = re.compile("\d+\.?\d*")
 def top_cpu(devices, pkg_name):
     cmd = "adb -s "+devices+" shell dumpsys cpuinfo | findstr " + pkg_name+":"
     get_cmd = os.popen(cmd).read()
-    match = re.compile(pkg_name + ": \d+\.?\d*%").search(get_cmd)
+    match = re.compile(pkg_name + ":\s+(\d+\.?\d*)%").search(get_cmd)
     result = 0.0
     if match:
-        num_match = num_re.search(match.group())
-        if num_match:
-            result = num_match.group()
-    try:
-        result = float(result)
-    except:
-        log.war("获取失败：" + str(result))
+        try:
+            result = float(match.group(1))
+        except:
+            log.war("获取失败：" + str(result))
     return result
 
 
@@ -27,16 +24,13 @@ def top_cpu(devices, pkg_name):
 def get_men(devices, pkg_name):
     cmd = "adb -s "+devices+" shell  dumpsys  meminfo %s"  %(pkg_name)
     get_cmd = os.popen(cmd).read()
-    match = re.compile("TOTAL:[ ]*\d+").search(get_cmd)
+    match = re.compile("TOTAL:\s*(\d+)").search(get_cmd)
     result = 0
     if match:
-        num_match = num_re.search(match.group())
-        if num_match:
-            result = num_match.group()
-    try:
-        result = int(result)
-    except:
-        log.war("获取失败：" + str(result))
+        try:
+            result = int(match.group(1))
+        except:
+            log.war("获取失败：" + str(result))
     return result
 
 
@@ -73,7 +67,7 @@ def get_men(devices, pkg_name):
 #     return flow
 
 if __name__ == '__main__':
-    # print(top_cpu(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
-    # print(get_men(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
+    print(top_cpu(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
+    print(get_men(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
     # print(get_fps(devices="TA09003E57",pkg_name="com.hexin.plat.kaihu"))
     pass

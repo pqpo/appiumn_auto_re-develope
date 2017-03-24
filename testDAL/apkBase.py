@@ -30,9 +30,9 @@ class ApkInfo:
         result = "Unknown"
         dump = self.get_dump_badging()
         if dump:
-            match = re.compile("versionName='.+?'").search(dump)
+            match = re.compile("versionName='(.+?)'").search(dump)
             if match:
-                result = match.group().split("=")[1].replace("'", "")
+                result = match.group(1)
         return result
 
     # 得到应用名字
@@ -44,9 +44,9 @@ class ApkInfo:
         result = "Unknown"
         dump = self.get_dump_badging()
         if dump:
-            match = re.compile("package: name='.+?'").search(dump)
+            match = re.compile("package: name='(.+?)'").search(dump)
             if match:
-                result = match.group().split("=")[1].replace("'", "")
+                result = match.group(1)
         return result
 
     # 得到启动类
@@ -54,9 +54,9 @@ class ApkInfo:
         result = "Unknown"
         dump = self.get_dump_badging()
         if dump:
-            match = re.compile("launchable-activity: name='.+?'").search(dump)
+            match = re.compile("launchable-activity: name='(.+?)'").search(dump)
             if match:
-                result = match.group().split("=")[1].replace("'", "")
+                result = match.group(1)
         return result
 
 if __name__ == '__main__':
