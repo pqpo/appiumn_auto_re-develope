@@ -3,6 +3,7 @@
    port: 4723
    config: node D:/Appium/node_modules/appium/bin/appium.js  -p 4723 -bp 4733 -U TA09003E57
    platformName: android
-   app: E:/github/appiumn_auto-master/img/monkneyTest.apk
-   crashLog: /sdcard/crash/*.log
+   app: E:/github/appiumn_auto-master/img/kaihu_V5.10.01_20170309_a1139d7_app_fortest.apk
+   crashLog: /sdcard/Android/data/com.hexin.plat.kaihu/files/logs/crashlog.txt
+   module_case: E:\github\appiumn_auto-master\testCase\module.yaml
    resetApp: 1

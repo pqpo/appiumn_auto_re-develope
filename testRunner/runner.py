@@ -26,10 +26,6 @@ from common import log
 from testRunner.autoTest import AutoTest
 
 
-def get_devices():
-    return operateYaml.get_yaml(PATH("../devices.yaml"))
-
-
 def get_email():
     m_m_email = m_email.GetEmail()
     m_m_email.file = PATH('../email.ini')
@@ -54,12 +50,13 @@ def get_report_collect(star_time, end_time, device):
     return data
 
 
-def runner_pool(module_case_yaml):
-    module_case = operateYaml.get_yaml(module_case_yaml)
+def runner_pool(devices_conf):
     devices_pool = []
-    for i in range(0, len(ga["appium"])):
+    for i in range(0, len(devices_conf["appium"])):
         device = {}
-        item = ga["appium"][i]
+        item = devices_conf["appium"][i]
+        if not check_module_file(item["module_case"]):
+            break
         device["appPath"] = item["app"]
         device["resetApp"] = False
         if 'resetApp' in item:
@@ -68,7 +65,7 @@ def runner_pool(module_case_yaml):
         device["platformVersion"] = phoneBase.get_phone_info(devices=item["device"])["release"]
         device["platformName"] = item["platformName"]
         device["port"] = item["port"]
-        device["module_case"] = module_case
+        device["module_case"] = operateYaml.get_yaml(PATH(item["module_case"]))
         device["crashLog"] = False
         if 'crashLog' in item:
             device["crashLog"] = item["crashLog"]
@@ -132,19 +129,16 @@ def check_module_file(module_file):
 
 if __name__ == '__main__':
     log.info("===============================Start===================================")
-    ga = get_devices()
-    case_file = PATH('../module.yaml')
-    if len(sys.argv) > 1:
-        case_file = sys.argv[1]
-    log.info('test module file: %s' % case_file)
-    if not check_module_file(case_file):
-        pass
-    elif adbCommon.attached_devices():
-        appium_server = server.AppiumServer(ga)
+    devices_conf_yaml = PATH("../devices.yaml")
+    if len(sys.argv) > 0:
+        devices_conf_yaml = PATH(sys.argv[0])
+    devices_conf = operateYaml.get_yaml(PATH(devices_conf_yaml))
+    if adbCommon.attached_devices():
+        appium_server = server.AppiumServer(devices_conf)
         appium_server.start_server()
         while not appium_server.is_running():
             time.sleep(2)
-        runner_pool(PATH(case_file))
+        runner_pool(devices_conf)
         appium_server.stop_server()
         operateFile.OperateFile(Constants.REPORT_COLLECT_PATH).remove_file()
         operateFile.OperateFile(Constants.REPORT_INIT).remove_file()
